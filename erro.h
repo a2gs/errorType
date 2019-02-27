@@ -25,7 +25,7 @@
 
 
 /* *** DEFINES *** */
-#define A2GS_TOOLBOX_ERRO_STR_SIZE 256
+#define A2GS_TOOLBOX_ERRO_STR_SIZE 250
 
 /* Clear de erro_t variable */
 #define A2GS_TOOLBOX_GET_ERRO(__err_)       (__err_.errno)
@@ -65,15 +65,23 @@ typedef struct _erro_t{
 
 /* *** EXAMPLE *** */
 #if 0
-int main(){
-	erro_t e;
-	char *msg = "erro 13";
+erro_t f()
+{
+   erro_t e;
+   char *msg = "erro 13 yakyakyak";
 
-	A2GS_TOOLBOX_CLEAR_ERRO(e);
+   A2GS_TOOLBOX_CLEAR_ERRO(e);
 
-	A2GS_TOOLBOX_SET_ERRO(e, 13, msg, strlen(msg));
+   A2GS_TOOLBOX_SET_ERRO(e, 13, msg, strlen(msg));
 
-	printf("[%d][%s]\n", A2GS_TOOLBOX_GET_ERRO(e), A2GS_TOOLBOX_GET_ERROSTRING(e));
+   return(e);
+}
+
+int main(int argc, char *argv[])
+{
+   erro_t e;
+   e = f();
+   printf("[%d][%s]\n", A2GS_TOOLBOX_GET_ERRO(e), A2GS_TOOLBOX_GET_ERROSTRING(e));
 }
 #endif
 
