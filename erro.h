@@ -3,7 +3,7 @@
  *
  * A function error type
  *
- * Public Domain
+ * MIT License
  *
  */
 
