@@ -13,11 +13,12 @@
  *  Who     | When       | What
  *  --------+------------+----------------------------
  *   a2gs   | 01/01/2002 | Creation
+ *   a2gs   | 13/10/2020 | A better interface
  *          |            |
  */
 
-#ifndef __A2GS_TOOLBOX_ERRO_H__
-#define __A2GS_TOOLBOX_ERRO_H__
+#ifndef __ERRO_T_H__
+#define __ERRO_T_H__
 
 
 /* *** INCLUDES *** */
@@ -25,38 +26,43 @@
 
 
 /* *** DEFINES *** */
-#define A2GS_TOOLBOX_ERRO_STR_SIZE 250
+#define ERRO_T_STR_SIZE (250)
 
 /* Clear de erro_t variable */
-#define A2GS_TOOLBOX_GET_ERRO(__err_)       (__err_.errno)
+#define ERRO_T_GET(__erro_t_) (__erro_t_.errno)
 
 /* Return the erro's number defined by someone into a erro_t variable */
-#define A2GS_TOOLBOX_GET_ERROSTRING(__err_) (__err_.errstr)
+#define ERRO_T_GET_MESSAGE(__erro_t_) (__erro_t_.errstr)
 
 /* Return the erro's message defined by someone into a erro_t variable */
-#define A2GS_TOOLBOX_CLEAR_ERRO(__err_){                                                             \
-                                       	__err_.errno = 0;                                            \
-                                       	memset(__err_.errstr, '\0', A2GS_TOOLBOX_ERRO_STR_SIZE + 1); \
-                                       }
+#define ERRO_T_CLEAR(__erro_t_){                                                      \
+                               	__erro_t_.errno = 0;                                 \
+                               	memset(__erro_t_.errstr, '\0', ERRO_T_STR_SIZE + 1); \
+                               }
 
 /* Define a erro into a erro_t variable
- * __err_        - erro_t variable
- * __errno_      - error number
- * __errstr_     - error message
- * __errstrSize_ - Size of __errstr_ in bytes (max size can be A2GS_TOOLBOX_ERRO_STR_SIZE)
+ * __erro_t_         - erro_t variable
+ * __erro_t_no_      - error number
+ * __erro_t_str_     - error message
+ * __erro_t_strSize_ - Size of __errstr_ in bytes (max size can be ERRO_T_STR_SIZE)
  */
-#define A2GS_TOOLBOX_SET_ERRO(__err_, __errno_, __errstr_, __errstrSize_){                                                                       \
-                              	__err_.errno = __errno_;                                                                                         \
-                              	memcpy(__err_.errstr, __errstr_,                                                                                 \
-                              	(A2GS_TOOLBOX_ERRO_STR_SIZE < __errstrSize_ ? A2GS_TOOLBOX_ERRO_STR_SIZE : __errstrSize_));                      \
-                              	__err_.errstr[(A2GS_TOOLBOX_ERRO_STR_SIZE < __errstrSize_ ? A2GS_TOOLBOX_ERRO_STR_SIZE : __errstrSize_)] = '\0'; \
-                              }
+#define ERRO_T_SET(__erro_t_,                                                                         \
+                   __erro_t_no_,                                                                      \
+                   __erro_t_str_,                                                                     \
+                   __erro_t_strSz_){                                                                  \
+                                   	size_t __erro_t_MaxSz_ = (((ERRO_T_STR_SIZE < __erro_t_strSz_) || \
+                                   	                           (__erro_t_strSz_ == 0)) ?              \
+                                   	                          ERRO_T_STR_SIZE : __erro_t_strSz_);     \
+                                   	__erro_t_.errno = __erro_t_no_;                                   \
+                                   	memcpy(__erro_t_.errstr, __erro_t_str_, __erro_t_MaxSz_ );        \
+                                   	__erro_t_.errstr[__erro_t_MaxSz_] = '\0';                         \
+                                   }
 
 
 /* *** DATA TYPES *** */
 typedef struct _erro_t{
 	int errno;
-	char errstr[A2GS_TOOLBOX_ERRO_STR_SIZE + 1];
+	char errstr[ERRO_T_STR_SIZE + 1];
 }erro_t;
 
 
@@ -65,14 +71,28 @@ typedef struct _erro_t{
 
 /* *** EXAMPLE *** */
 #if 0
-erro_t f()
+#include <erro_t.h>
+#include <stdio.h>
+#include <string.h>
+
+erro_t f1(void)
 {
    erro_t e;
-   char *msg = "erro 13 yakyakyak";
+   char *msg = "erro yakyakyak";
 
-   A2GS_TOOLBOX_CLEAR_ERRO(e);
+   ERRO_T_CLEAR(e);
+   ERRO_T_SET(e, 13, msg, 0);
 
-   A2GS_TOOLBOX_SET_ERRO(e, 13, msg, strlen(msg));
+   return(e);
+}
+
+erro_t f2(void)
+{
+   erro_t e;
+   char *msg = "erro blablabla";
+
+   ERRO_T_CLEAR(e);
+   ERRO_T_SET(e, 8, msg, strlen(msg));
 
    return(e);
 }
@@ -80,8 +100,12 @@ erro_t f()
 int main(int argc, char *argv[])
 {
    erro_t e;
-   e = f();
-   printf("[%d][%s]\n", A2GS_TOOLBOX_GET_ERRO(e), A2GS_TOOLBOX_GET_ERROSTRING(e));
+
+   e = f1();
+   printf("[%d][%s]\n", ERRO_T_GET(e), ERRO_T_GET_MESSAGE(e));
+
+   e = f2();
+   printf("[%d][%s]\n", ERRO_T_GET(e), ERRO_T_GET_MESSAGE(e));
 }
 #endif
 
